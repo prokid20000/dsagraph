@@ -105,15 +105,16 @@ class Graph {
 
   /** find the distance of the shortest path from the start vertex to the end vertex */
   distanceOfShortestPath(start, end) {
-    let dist = new Map();
-    let previous = new Map();
+    let dist = new Object();
+    let previous = new Object();
 
-    for (let node in this.nodes) {
-      dist[node] = Infinity;
-      previous[v] = undefined;
+    for (let node of this.nodes) {
+      dist[node.value] = Infinity;
+      previous[node.value] = undefined;
     }
+    
 
-    dist[start] = 0;
+    dist[start.value] = 0;
 
 
     const nodeQueue = [];
@@ -126,30 +127,43 @@ class Graph {
         if (currNode === null) {
           currNode = node;
         }
-        else if (dist[node] < dist[currNode]) {
+        else if (dist[node.value] < dist[currNode.value]) {
           currNode = node;
         }
       }
-
 
       //find currNode in the queue
       const currNodeIdx = nodeQueue.indexOf(currNode);
 
       //removes currNode from the queue
-      nodeQueue.splice(currNodeIdx);
+      nodeQueue.splice(currNodeIdx, 1);
 
       //check the distance of each other node, update if shorter
       for (let neighbor of currNode.adjacent) {
-        let alternateDistance = dist[currNode] + 1;
+        let alternateDistance = dist[currNode.value] + 1;
 
-        if (alternateDistance < dist[neighbor]) {
-          dist[neighbor] = alternateDistance;
-          previous[neighbor] = currNode;
+        if (alternateDistance < dist[neighbor.value]) {
+          dist[neighbor.value] = alternateDistance;
+          previous[neighbor.value] = currNode;
         }
       }
     }
-
-    return dist[end];
+  
+    
+    let endNode = end;
+    let count =0;
+    
+    while(endNode.value !== start.value){
+      
+      endNode = previous[endNode.value];
+      if(endNode === undefined){
+        return undefined;
+      }
+      
+      count++;
+    }
+    
+    return count;
   }
 }
 
